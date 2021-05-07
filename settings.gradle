@@ -1,0 +1,3 @@
+rootProject.name = "My Library"
+include ':app'
+include ':DynamicStatusBar'
