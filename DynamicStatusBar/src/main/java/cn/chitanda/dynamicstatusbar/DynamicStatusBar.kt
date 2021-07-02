@@ -30,6 +30,8 @@ object DynamicStatusBar : LifecycleObserver {
         get() = weakDecorView.get()
 
     fun init(activity: AppCompatActivity) {
+//        val nativeAnalyst = NativeAnalyst()
+//        Log.d(TAG, "init: ${nativeAnalyst.init()}")
         this.activity = WeakReference(activity)
         weakDecorView = WeakReference(activity.window.decorView)
         activity.lifecycle.addObserver(this)

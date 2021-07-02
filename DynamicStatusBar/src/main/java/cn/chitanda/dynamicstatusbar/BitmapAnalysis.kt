@@ -1,12 +1,16 @@
 package cn.chitanda.dynamicstatusbar
 
 import android.graphics.Bitmap
+import android.util.Log
+import java.text.SimpleDateFormat
 import kotlin.math.roundToInt
 
 private const val RED = 0xff00ffff.toInt()
 private const val GREEN = 0xffff00ff.toInt()
 private const val BLUE = 0xffffff00.toInt()
+private val nativeAnalyst =NativeAnalyst()
 internal fun Bitmap.isLightColor(): Boolean {
+    var start = System.currentTimeMillis()
     var r: Int
     var b: Int
     var g: Int
@@ -22,5 +26,13 @@ internal fun Bitmap.isLightColor(): Boolean {
     }
     val pixelCount = width * height
     bright = (bright / pixelCount)
+    var end = System.currentTimeMillis()
+    Log.d("Bitmap", "java: bright = $bright cost time:${sdf.format(end - start)}")
+    start = System.currentTimeMillis()
+    val jni = nativeAnalyst.getBright(this)
+    end = System.currentTimeMillis()
+    Log.d("Bitmap", "jni: bright = $jni cost time:${sdf.format(end - start)}")
     return bright > 128
 }
+
+private val sdf = SimpleDateFormat("SSSS")
