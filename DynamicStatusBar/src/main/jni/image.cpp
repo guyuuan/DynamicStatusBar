@@ -6,44 +6,60 @@
 #include <string>
 #include "mlog.h"
 #include "android/bitmap.h"
-#include "opencv2/opencv.hpp"
-#include "opencv2/core.hpp"
 
-#define ASSERT(status, ret)     if (!(status)) { return ret; }
-#define ASSERT_FALSE(status)    ASSERT(status, false)
+
+#define MAKE_ABGR(a, b, g, r) (((a&0xff)<<24) | ((b & 0xff) << 16) | ((g & 0xff) << 8 ) | (r & 0xff))
+
+
+#define BGR_8888_A(p) ((p & (0xff<<24))   >> 24 )
+#define BGR_8888_B(p) ((p & (0xff << 16)) >> 16 )
+#define BGR_8888_G(p) ((p & (0xff << 8))  >> 8 )
+#define BGR_8888_R(p) (p & (0xff) )
 
 extern "C" {
-jstring jni_getString(JNIEnv *env, jobject obj) {
-    std::string str = "native  has been initialized ";
-    return env->NewStringUTF(str.c_str());
-}
-jint jni_getBright(JNIEnv *env, jobject jobj, jobject bitmap) {
-    void *bitmapPixels;                                            // Save picture pixel data
-    AndroidBitmapInfo bitmapInfo;                                   // Save picture parameters
-    cv::Mat mat;
-    cv::Mat gray;
-    ASSERT_FALSE(AndroidBitmap_getInfo(env, bitmap, &bitmapInfo) >= 0);        // Get picture parameters
-    ASSERT_FALSE(bitmapInfo.format == ANDROID_BITMAP_FORMAT_RGBA_8888|| bitmapInfo.format ==ANDROID_BITMAP_FORMAT_RGB_565);          // Only ARGB? 8888 and RGB? 565 are supported
-    ASSERT_FALSE(AndroidBitmap_lockPixels(env, bitmap, &bitmapPixels) >=0);  // Get picture pixels (lock memory block)
-    ASSERT_FALSE(bitmapPixels);
 
-    if (bitmapInfo.format == ANDROID_BITMAP_FORMAT_RGBA_8888) {
-        cv::Mat tmp(bitmapInfo.height, bitmapInfo.width, CV_8UC4,bitmapPixels);    // Establish temporary mat
-        tmp.copyTo(
-                mat);                                                         // Copy to target matrix
-    } else {
-        cv::Mat tmp(bitmapInfo.height, bitmapInfo.width, CV_8UC2, bitmapPixels);
-        cv::cvtColor(tmp, mat, cv::COLOR_BGR5652RGB);
+jint jni_getBright(JNIEnv *env, jobject jobj, jobject bitmap) {
+    AndroidBitmapInfo bitmapInfo;
+    int result = AndroidBitmap_getInfo(env, bitmap, &bitmapInfo);
+    if (ANDROID_BITMAP_RESULT_SUCCESS != result) {
+        LOG_E("get bitmap info error :%d", result);
     }
-    cv::cvtColor(mat, gray, cv::COLOR_BGR2GRAY, 0);
-    cv::Scalar s = cv::mean(gray);
-    int bright = (int)s.val[0];
-    LOGD("jni bright %lf",s.val[0]);
-    return (jint) bright;
+    //获取Bitmap像素缓存指针,通过遍历获取BGRA数据
+    void *p = nullptr;
+    result = AndroidBitmap_lockPixels(env, bitmap, &p);
+    if (ANDROID_BITMAP_RESULT_SUCCESS != result) {
+        LOG_E("lock bitmap pixels error :%d", result);
+    }
+
+    //获取图片宽高
+    uint32_t w = bitmapInfo.width;
+    uint32_t h = bitmapInfo.height;
+
+    auto pixels = (uint32_t *) p;
+    LOG_D("bitmap width = %d", w);
+    LOG_D("bitmap height = %d", h);
+    LOG_D("bitmap format: %d", bitmapInfo.format);
+    int a, r, g, b;
+    uint32_t bright = 0;
+    for (int x = 0; x < w; ++x) {
+        for (int y = 0; y < h; ++y) {
+            LOG_D("pixel data = %d", pixels[0]);
+            void *pixel = nullptr;
+            pixel = pixels + y * w + x;
+            uint32_t v = *((uint32_t *) pixel);
+            a = BGR_8888_A(v);
+            r = BGR_8888_R(v);
+            g = BGR_8888_G(v);
+            b = BGR_8888_B(v);
+            bright += (uint32_t) (0.299 * r + 0.587 * g + 0.114 * b);
+        }
+    }
+    bright = (bright / (w * h));
+    LOG_D("avg bright = %d",bright);
+    return bright;
 }
-static char *className = "cn/chitanda/dynamicstatusbar/NativeAnalyst";
+static std::string className = "cn/chitanda/dynamicstatusbar/NativeAnalyst";
 static JNINativeMethod methods[] = {
-        {"init",      "()Ljava/lang/String;",         (jstring *) jni_getString},
         {"getBright", "(Landroid/graphics/Bitmap;)I", (jint *) jni_getBright}
 
 };
@@ -51,22 +67,22 @@ static JNINativeMethod methods[] = {
 JNIEXPORT jint JNI_OnLoad(JavaVM *javaVm, void *) {
     JNIEnv *env = nullptr;
     int r = javaVm->GetEnv(reinterpret_cast<void **>(&env), JNI_VERSION_1_6);
-    LOGD("start get JNIEnv");
+    LOG_D("start get JNIEnv");
     if (r != JNI_OK) {
-        LOGE("can't get JNIEnv");
+        LOG_E("can't get JNIEnv");
         return JNI_ERR;
     }
     jclass clazz = nullptr;
-    LOGD("start get %s", className);
-    clazz = env->FindClass(className);
+    LOG_D("start get %s", className.c_str());
+    clazz = env->FindClass(className.c_str());
     if (clazz == nullptr) {
-        LOGE("can't get %s", className);
+        LOG_E("can't get %s", className.c_str());
         return JNI_ERR;
     }
-    LOGD("start register natives");
+    LOG_D("start register natives");
     r = env->RegisterNatives(clazz, methods, sizeof(methods) / sizeof(JNINativeMethod));
     if (r != JNI_OK) {
-        LOGE("register natives failed");
+        LOG_E("register natives failed");
         return JNI_ERR;
     }
     return JNI_VERSION_1_6;

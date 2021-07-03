@@ -15,11 +15,11 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
-        externalNativeBuild {
-            cmake {
-                arguments "-DANDROID_STL=c++_shared"
-            }
-        }
+//        externalNativeBuild {
+//            cmake {
+//                arguments "-DANDROID_STL=c++_shared"
+//            }
+//        }
     }
 
     buildTypes {
@@ -41,13 +41,13 @@ android {
             path file('CMakeLists.txt')
         }
     }
-    sourceSets {
-        main {
-            // The libs directory contains prebuilt libraries that are used by the
-            // app's library defined in CMakeLists.txt via an IMPORTED target.
-            jniLibs.srcDirs = ['libs']
-        }
-    }
+//    sourceSets {
+//        main {
+//            // The libs directory contains prebuilt libraries that are used by the
+//            // app's library defined in CMakeLists.txt via an IMPORTED target.
+//            jniLibs.srcDirs = ['libs']
+//        }
+//    }
 }
 
 dependencies {

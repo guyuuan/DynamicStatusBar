@@ -14,6 +14,5 @@ class NativeAnalyst {
         }
     }
 
-    external fun init(): String
     external fun getBright(bitmap: Bitmap): Int
 }

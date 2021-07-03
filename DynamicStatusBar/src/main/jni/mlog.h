@@ -5,6 +5,6 @@
 
 #ifndef JNI_LOG_H
 #define JNI_LOG_H
-#define  LOGD(...) __android_log_print(ANDROID_LOG_DEBUG,"Bitmap",__VA_ARGS__)
-#define  LOGE(...) __android_log_print(ANDROID_LOG_ERROR,"Bitmap",__VA_ARGS__)
+#define  LOG_D(...) __android_log_print(ANDROID_LOG_DEBUG,"Bitmap",__VA_ARGS__)
+#define  LOG_E(...) __android_log_print(ANDROID_LOG_ERROR,"Bitmap",__VA_ARGS__)
 #endif //JNI_LOG_H
