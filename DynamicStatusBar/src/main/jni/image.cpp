@@ -18,7 +18,7 @@
 
 extern "C" {
 
-jint jni_getBright(JNIEnv *env, jobject jobj, jobject bitmap) {
+jint jni_getBright(JNIEnv *env, jobject bitmap) {
     AndroidBitmapInfo bitmapInfo;
     int result = AndroidBitmap_getInfo(env, bitmap, &bitmapInfo);
     if (ANDROID_BITMAP_RESULT_SUCCESS != result) {
@@ -39,23 +39,23 @@ jint jni_getBright(JNIEnv *env, jobject jobj, jobject bitmap) {
     LOG_D("bitmap width = %d", w);
     LOG_D("bitmap height = %d", h);
     LOG_D("bitmap format: %d", bitmapInfo.format);
-    int a, r, g, b;
+    int  r, g, b;
     uint32_t bright = 0;
     for (int x = 0; x < w; ++x) {
         for (int y = 0; y < h; ++y) {
-            LOG_D("pixel data = %d", pixels[0]);
-            void *pixel = nullptr;
+//            LOG_D("pixel data = %d", pixels[0]);
+            void *pixel;
             pixel = pixels + y * w + x;
             uint32_t v = *((uint32_t *) pixel);
-            a = BGR_8888_A(v);
+//            a = BGR_8888_A(v);
             r = BGR_8888_R(v);
             g = BGR_8888_G(v);
             b = BGR_8888_B(v);
-            bright += (uint32_t) (0.299 * r + 0.587 * g + 0.114 * b);
+            bright += (uint32_t) (0.299f * (double) r + 0.587f * (double) g + 0.114f * (double) b);
         }
     }
     bright = (bright / (w * h));
-    LOG_D("avg bright = %d",bright);
+    LOG_D("avg bright = %d", bright);
     return bright;
 }
 static std::string className = "cn/chitanda/dynamicstatusbar/NativeAnalyst";
@@ -72,7 +72,7 @@ JNIEXPORT jint JNI_OnLoad(JavaVM *javaVm, void *) {
         LOG_E("can't get JNIEnv");
         return JNI_ERR;
     }
-    jclass clazz = nullptr;
+    jclass clazz;
     LOG_D("start get %s", className.c_str());
     clazz = env->FindClass(className.c_str());
     if (clazz == nullptr) {

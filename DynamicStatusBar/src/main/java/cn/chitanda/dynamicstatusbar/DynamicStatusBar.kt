@@ -60,7 +60,7 @@ object DynamicStatusBar : LifecycleObserver {
     private val preDrawListener by lazy {
         ViewTreeObserver.OnPreDrawListener {
             if (decorView != null && initStatusBarBitmap()) {
-                val oldBitmap = statusBarBitmap?.copy(Bitmap.Config.RGB_565, false)
+                val oldBitmap = statusBarBitmap?.copy(Bitmap.Config.ARGB_8888, false)
                 val backup = statusBarCanvas?.save()
                 try {
                     statusBarCanvas?.let {
@@ -92,7 +92,7 @@ object DynamicStatusBar : LifecycleObserver {
             try {
                 val w = Resources.getSystem().displayMetrics.widthPixels / 5
                 val h = getStatusBarHeight() / 5
-                statusBarBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.RGB_565)
+                statusBarBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
                 statusBarCanvas = Canvas(statusBarBitmap ?: return false)
 
             } catch (e: Exception) {
