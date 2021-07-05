@@ -22,7 +22,7 @@ Automatically modify the color of the android status bar icon.
 
    ```groovy
     dependencies {
-         implementation("cn.chitanda:dynamicstatusbar:1.0")
+         implementation("cn.chitanda:dynamicstatusbar:2.0")
     }
    ```
 

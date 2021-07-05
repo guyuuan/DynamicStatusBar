@@ -7,10 +7,7 @@
 #include "mlog.h"
 #include "android/bitmap.h"
 
-
-#define MAKE_ABGR(a, b, g, r) (((a&0xff)<<24) | ((b & 0xff) << 16) | ((g & 0xff) << 8 ) | (r & 0xff))
-
-
+//(A & 0xff) << 24 | (B & 0xff) << 16 | (G & 0xff) << 8 | (R & 0xff);
 #define BGR_8888_A(p) ((p & (0xff<<24))   >> 24 )
 #define BGR_8888_B(p) ((p & (0xff << 16)) >> 16 )
 #define BGR_8888_G(p) ((p & (0xff << 8))  >> 8 )
@@ -18,7 +15,7 @@
 
 extern "C" {
 
-jint jni_getBright(JNIEnv *env, jobject bitmap) {
+jint jni_getBright(JNIEnv *env,jobject , jobject bitmap) {
     AndroidBitmapInfo bitmapInfo;
     int result = AndroidBitmap_getInfo(env, bitmap, &bitmapInfo);
     if (ANDROID_BITMAP_RESULT_SUCCESS != result) {
@@ -36,18 +33,13 @@ jint jni_getBright(JNIEnv *env, jobject bitmap) {
     uint32_t h = bitmapInfo.height;
 
     auto pixels = (uint32_t *) p;
-    LOG_D("bitmap width = %d", w);
-    LOG_D("bitmap height = %d", h);
-    LOG_D("bitmap format: %d", bitmapInfo.format);
     int  r, g, b;
     uint32_t bright = 0;
     for (int x = 0; x < w; ++x) {
         for (int y = 0; y < h; ++y) {
-//            LOG_D("pixel data = %d", pixels[0]);
             void *pixel;
             pixel = pixels + y * w + x;
             uint32_t v = *((uint32_t *) pixel);
-//            a = BGR_8888_A(v);
             r = BGR_8888_R(v);
             g = BGR_8888_G(v);
             b = BGR_8888_B(v);

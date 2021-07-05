@@ -30,8 +30,6 @@ object DynamicStatusBar : LifecycleObserver {
         get() = weakDecorView.get()
 
     fun init(activity: AppCompatActivity) {
-//        val nativeAnalyst = NativeAnalyst()
-//        Log.d(TAG, "init: ${nativeAnalyst.init()}")
         this.activity = WeakReference(activity)
         weakDecorView = WeakReference(activity.window.decorView)
         activity.lifecycle.addObserver(this)
@@ -75,11 +73,11 @@ object DynamicStatusBar : LifecycleObserver {
                 }
                 if (statusBarBitmap != oldBitmap) {
                     mainHandler.apply {
-                        removeMessages(0)
+                        removeCallbacksAndMessages(null)
                         postDelayed({
                             insetsController?.isAppearanceLightStatusBars =
                                 statusBarBitmap?.isLightColor() == true
-                        }, 50)
+                        }, 20)
                     }
                 }
             }
