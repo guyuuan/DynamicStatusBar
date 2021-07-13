@@ -9,6 +9,8 @@ import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
+import androidx.activity.ComponentActivity
+import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.Lifecycle
@@ -29,6 +31,15 @@ object DynamicStatusBar : LifecycleObserver {
     private val decorView: View?
         get() = weakDecorView.get()
 
+    @MainThread
+    fun init(activity: ComponentActivity) {
+        this.activity = WeakReference(activity)
+        weakDecorView = WeakReference(activity.window.decorView)
+        activity.lifecycle.addObserver(this)
+        insetsController = WindowInsetsControllerCompat(activity.window, activity.window.decorView)
+    }
+
+    @MainThread
     fun init(activity: AppCompatActivity) {
         this.activity = WeakReference(activity)
         weakDecorView = WeakReference(activity.window.decorView)
@@ -39,6 +50,7 @@ object DynamicStatusBar : LifecycleObserver {
     /*
     *  @Description: Turn off the dynamic effect temporarily, you can turn it on again by using open()
     * */
+    @MainThread
     fun close() {
         if (!switcher) return
         switcher = false
@@ -49,6 +61,7 @@ object DynamicStatusBar : LifecycleObserver {
     *  @Description: It is used when it needs to be re-opened after it is closed again.
     *                Generally, there is no need to actively call to open it.
     * */
+    @MainThread
     fun open() {
         if (switcher) return
         switcher = true
