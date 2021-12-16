@@ -13,14 +13,15 @@ import androidx.activity.ComponentActivity
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.drawToBitmap
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import java.lang.ref.WeakReference
 
 private const val TAG = "DynamicStatusBar"
 
-object DynamicStatusBar : LifecycleObserver {
+object DynamicStatusBar : LifecycleEventObserver {
     private lateinit var activity: WeakReference<Activity>
     private var switcher = true
     private val mainHandler by lazy { Handler(Looper.getMainLooper()) }
@@ -71,12 +72,10 @@ object DynamicStatusBar : LifecycleObserver {
     private val preDrawListener by lazy {
         ViewTreeObserver.OnPreDrawListener {
             if (decorView != null && initStatusBarBitmap()) {
-                val oldBitmap = statusBarBitmap?.copy(Bitmap.Config.ARGB_8888, false)
                 val backup = statusBarCanvas?.save()
                 try {
                     statusBarCanvas?.let {
                         it.scale(1 / 5f, 1 / 5f)
-                        decorView?.background?.draw(it)
                         decorView?.draw(it)
                     }
                 } catch (e: Exception) {
@@ -84,14 +83,12 @@ object DynamicStatusBar : LifecycleObserver {
                 } finally {
                     backup?.let { statusBarCanvas?.restoreToCount(it) }
                 }
-                if (statusBarBitmap != oldBitmap) {
-                    mainHandler.apply {
-                        removeCallbacksAndMessages(null)
-                        postDelayed({
-                            insetsController?.isAppearanceLightStatusBars =
-                                statusBarBitmap?.isLightColor() == true
-                        }, 20)
-                    }
+                mainHandler.apply {
+                    removeCallbacksAndMessages(null)
+                    postDelayed({
+                        insetsController?.isAppearanceLightStatusBars =
+                            statusBarBitmap?.isLightColor() == true
+                    }, 20)
                 }
             }
             true
@@ -126,13 +123,19 @@ object DynamicStatusBar : LifecycleObserver {
         }
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     private fun onResume() {
         decorView?.viewTreeObserver?.addOnPreDrawListener(preDrawListener)
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     private fun onPause() {
         decorView?.viewTreeObserver?.removeOnPreDrawListener(preDrawListener)
+    }
+
+    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+        when (event) {
+            Lifecycle.Event.ON_PAUSE -> onPause()
+            Lifecycle.Event.ON_RESUME -> onResume()
+            else -> {}
+        }
     }
 }
