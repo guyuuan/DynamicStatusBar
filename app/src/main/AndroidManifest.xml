@@ -10,6 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyLibrary">
         <activity
+            android:name=".NextActivity"
+            android:exported="false" />
+        <activity
             android:name=".compose.ComposeActivity"
             android:exported="true"
             android:label="Compose"

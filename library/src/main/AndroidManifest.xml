@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="cn.chitanda.dynamicstatusbar">
-
+    <application>
+        <provider
+            android:exported="false"
+            android:authorities="{applicationId}.DynamicStatusBarInitContentProvider"
+            android:name=".init.InitContentProvider"/>
+    </application>
 </manifest>
