@@ -22,18 +22,11 @@ Automatically modify the color of the android status bar icon.
 
    ```groovy
     dependencies {
-         implementation("cn.chitanda:dynamicstatusbar:2.0")
+         implementation("cn.chitanda:dynamicstatusbar:2.2")
     }
    ```
 
-3. Initialize after the activity starts
-
-   ```kotlin
-   override fun onCreate(savedInstanceState: Bundle?) {
-           super.onCreate(savedInstanceState)
-           DynamicStatusBar.init(this)
-   }
-   ```
+3. Use ContentProvider to initialize the framework, you don't need to do other things, all activities can automatically change the status bar color
 
    
 
