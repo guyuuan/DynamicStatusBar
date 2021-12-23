@@ -72,20 +72,20 @@ object DynamicStatusBar : LifecycleEventObserver {
     private val preDrawListener by lazy {
         ViewTreeObserver.OnPreDrawListener {
             if (decorView != null && initStatusBarBitmap()) {
-                val backup = statusBarCanvas?.save()
-                try {
-                    statusBarCanvas?.let {
-                        it.scale(1 / 5f, 1 / 5f)
-                        decorView?.draw(it)
-                    }
-                } catch (e: Exception) {
-                    Log.e(TAG, "OnPreDrawListener: ", e)
-                } finally {
-                    backup?.let { statusBarCanvas?.restoreToCount(it) }
-                }
                 mainHandler.apply {
                     removeCallbacksAndMessages(null)
                     postDelayed({
+                        val backup = statusBarCanvas?.save()
+                        try {
+                            statusBarCanvas?.let {
+                                it.scale(1 / 5f, 1 / 5f)
+                                decorView?.draw(it)
+                            }
+                        } catch (e: Exception) {
+                            Log.e(TAG, "OnPreDrawListener: ", e)
+                        } finally {
+                            backup?.let { statusBarCanvas?.restoreToCount(it) }
+                        }
                         insetsController?.isAppearanceLightStatusBars =
                             statusBarBitmap?.isLightColor() == true
                     }, 20)

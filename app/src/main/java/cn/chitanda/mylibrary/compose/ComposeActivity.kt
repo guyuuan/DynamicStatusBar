@@ -11,13 +11,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
+import cn.chitanda.dynamicstatusbar.DynamicStatusBar
 import cn.chitanda.mylibrary.compose.ui.theme.MyLibraryTheme
 
 private const val TAG = "ComposeActivity"
@@ -26,6 +24,7 @@ class ComposeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
+        DynamicStatusBar.init(this)
         setContent {
             MyLibraryTheme {
                 // A surface container using the 'background' color from the theme
