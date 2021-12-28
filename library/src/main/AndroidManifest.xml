@@ -4,7 +4,8 @@
     <application>
         <provider
             android:exported="false"
-            android:authorities="{applicationId}.DynamicStatusBarInitContentProvider"
+            android:enabled="true"
+            android:authorities="${applicationId}.DynamicStatusBarInitContentProvider"
             android:name=".init.InitContentProvider"/>
     </application>
 </manifest>
