@@ -23,7 +23,7 @@ object DynamicStatusBar {
     private var statusBarHeight: Int = 100
     private var weakDecorView: WeakReference<View>? = null
     private val decorView: View? get() = weakDecorView?.get()
-
+    var mode: Mode = Mode.Normal
     //    @MainThread
 //    fun init(activity: ComponentActivity) {
 //        this.activity = WeakReference(activity)
@@ -64,7 +64,7 @@ object DynamicStatusBar {
                         }
                         insetsController?.isAppearanceLightStatusBars =
                             statusBarBitmap?.isLightColor() == true
-                    }, 20)
+                    }, mode.delayTime)
                 }
             }
             true
@@ -109,5 +109,11 @@ object DynamicStatusBar {
         mainHandler.removeCallbacksAndMessages(null)
         insetsController = null
         decorView?.viewTreeObserver?.removeOnPreDrawListener(preDrawListener)
+    }
+
+    sealed class Mode private constructor(internal val delayTime: Long) {
+        object Normal : Mode(450L)
+        object Slow : Mode(1000L)
+        object Fast : Mode(100L)
     }
 }
