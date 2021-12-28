@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
+import cn.chitanda.dynamicstatusbar.DynamicStatusBar
 import cn.chitanda.mylibrary.compose.ui.theme.MyLibraryTheme
 
 private const val TAG = "ComposeActivity"
@@ -23,6 +24,7 @@ class ComposeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
+        DynamicStatusBar.mode = DynamicStatusBar.Mode.Fast
         setContent {
             MyLibraryTheme {
                 // A surface container using the 'background' color from the theme
