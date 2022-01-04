@@ -16,29 +16,12 @@ import java.lang.ref.WeakReference
 private const val TAG = "DynamicStatusBar"
 
 object DynamicStatusBar {
-    private val mainHandler by lazy { Handler(Looper.getMainLooper()) }
     private var statusBarBitmap: Bitmap? = null
     private var statusBarCanvas: Canvas? = null
     private var insetsController: WindowInsetsControllerCompat? = null
     private var statusBarHeight: Int = 100
     private var weakDecorView: WeakReference<View>? = null
     private val decorView: View? get() = weakDecorView?.get()
-    var mode: Mode = Mode.Normal
-    //    @MainThread
-//    fun init(activity: ComponentActivity) {
-//        this.activity = WeakReference(activity)
-//        weakDecorView = WeakReference(activity.window.decorView)
-//        activity.lifecycle.addObserver(this)
-//        insetsController = WindowInsetsControllerCompat(activity.window, activity.window.decorView)
-//    }
-//
-//    @MainThread
-//    fun init(activity: AppCompatActivity) {
-//        this.activity = WeakReference(activity)
-//        weakDecorView = WeakReference(activity.window.decorView)
-//        activity.lifecycle.addObserver(this)
-//        insetsController = WindowInsetsControllerCompat(activity.window, activity.window.decorView)
-//    }
 
     internal fun init(context: Context) {
         getStatusBarHeight(context)
@@ -48,15 +31,12 @@ object DynamicStatusBar {
     private val preDrawListener by lazy {
         ViewTreeObserver.OnPreDrawListener {
             if (initStatusBarBitmap()) {
-                mainHandler.apply {
-                    removeCallbacksAndMessages(null)
-                    postDelayed({
+                statusBarCanvas?.let {
+                    decorView?.post {
                         val backup = statusBarCanvas?.save()
                         try {
-                            statusBarCanvas?.let {
-                                it.scale(1 / 5f, 1 / 5f)
-                                decorView?.draw(it)
-                            }
+                            it.scale(1 / 5f, 1 / 5f)
+                            decorView?.draw(it)
                         } catch (e: Exception) {
                             Log.e(TAG, "OnPreDrawListener: ", e)
                         } finally {
@@ -64,7 +44,7 @@ object DynamicStatusBar {
                         }
                         insetsController?.isAppearanceLightStatusBars =
                             statusBarBitmap?.isLightColor() == true
-                    }, mode.delayTime)
+                    }
                 }
             }
             true
@@ -106,14 +86,8 @@ object DynamicStatusBar {
     }
 
     internal fun onPause() {
-        mainHandler.removeCallbacksAndMessages(null)
         insetsController = null
         decorView?.viewTreeObserver?.removeOnPreDrawListener(preDrawListener)
     }
 
-    sealed class Mode  constructor(internal val delayTime: Long) {
-        object Normal : Mode(250L)
-        object Slow : Mode(450L)
-        object Fast : Mode(100L)
-    }
 }

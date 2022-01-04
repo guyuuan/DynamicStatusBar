@@ -24,7 +24,6 @@ class ComposeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
-        DynamicStatusBar.mode = DynamicStatusBar.Mode.Fast
         setContent {
             MyLibraryTheme {
                 // A surface container using the 'background' color from the theme
