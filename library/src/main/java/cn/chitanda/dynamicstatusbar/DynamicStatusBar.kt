@@ -111,9 +111,9 @@ object DynamicStatusBar {
         decorView?.viewTreeObserver?.removeOnPreDrawListener(preDrawListener)
     }
 
-    sealed class Mode private constructor(internal val delayTime: Long) {
-        object Normal : Mode(450L)
-        object Slow : Mode(1000L)
+    sealed class Mode  constructor(internal val delayTime: Long) {
+        object Normal : Mode(250L)
+        object Slow : Mode(450L)
         object Fast : Mode(100L)
     }
 }
