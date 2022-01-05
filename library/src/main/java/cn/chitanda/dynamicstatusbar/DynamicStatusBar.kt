@@ -11,9 +11,6 @@ import android.view.Window
 import androidx.core.view.WindowInsetsControllerCompat
 import java.lang.ref.WeakReference
 import kotlin.math.roundToLong
-import kotlin.system.measureTimeMillis
-import kotlin.time.measureTime
-import kotlin.time.measureTimedValue
 
 private const val TAG = "DynamicStatusBar"
 
@@ -45,20 +42,17 @@ object DynamicStatusBar {
 
     private fun calculateBright() {
         statusBarCanvas?.let {
-          val time =  measureTimeMillis{
-                val backup = statusBarCanvas?.save()
-                try {
-                    it.scale(1 / 5f, 1 / 5f)
-                    decorView?.draw(it)
-                } catch (e: Exception) {
-                    Log.e(TAG, "OnPreDrawListener: ", e)
-                } finally {
-                    backup?.let { statusBarCanvas?.restoreToCount(it) }
-                    insetsController?.isAppearanceLightStatusBars =
-                        statusBarBitmap?.isLightColor() == true
-                }
+            val backup = statusBarCanvas?.save()
+            try {
+                it.scale(1 / 5f, 1 / 5f)
+                decorView?.draw(it)
+            } catch (e: Exception) {
+                Log.e(TAG, "OnPreDrawListener: ", e)
+            } finally {
+                backup?.let { statusBarCanvas?.restoreToCount(it) }
+                insetsController?.isAppearanceLightStatusBars =
+                    statusBarBitmap?.isLightColor() == true
             }
-            Log.d(TAG, "calculateBright: time = $time ms")
         }
     }
 
@@ -91,12 +85,8 @@ object DynamicStatusBar {
     }
 
     internal fun onResume(window: Window) {
-        weakDecorView = WeakReference(
-            if (window.decorView.fitsSystemWindows) window.decorView else window.decorView.findViewById(
-                android.R.id.content
-            )
-        )
-        delay =(1000L/ (window.decorView.display?.refreshRate?: 60f).roundToLong() )
+        weakDecorView = WeakReference(window.decorView)
+        delay = (1000L / (window.decorView.display?.refreshRate ?: 60f).roundToLong())
         insetsController = WindowInsetsControllerCompat(window, window.decorView)
         decorView?.viewTreeObserver?.addOnPreDrawListener(preDrawListener)
     }
