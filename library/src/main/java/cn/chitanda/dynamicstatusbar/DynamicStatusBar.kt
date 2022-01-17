@@ -4,7 +4,11 @@ import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.view.PixelCopy
 import android.view.View
 import android.view.ViewTreeObserver
 import android.view.Window
@@ -19,9 +23,12 @@ object DynamicStatusBar {
     private var statusBarCanvas: Canvas? = null
     private var insetsController: WindowInsetsControllerCompat? = null
     private var statusBarHeight: Int = 100
+    private var weakWindow: WeakReference<Window>? = null
     private var weakDecorView: WeakReference<View>? = null
     private val decorView: View? get() = weakDecorView?.get()
+    private val window: Window? get() = weakWindow?.get()
     private var delay = 1000L / 60
+    private val handler = Handler(Looper.getMainLooper())
     internal fun init(context: Context) {
         getStatusBarHeight(context)
         initStatusBarBitmap()
@@ -30,10 +37,7 @@ object DynamicStatusBar {
     private val preDrawListener by lazy {
         ViewTreeObserver.OnPreDrawListener {
             if (initStatusBarBitmap()) {
-                decorView?.handler?.let {
-                    it.removeCallbacksAndMessages(null)
-                    it.postDelayed(::calculateBright, delay)
-                }
+                decorView?.handler?.postDelayed(::calculateBright, delay)
             }
             true
         }
@@ -41,20 +45,36 @@ object DynamicStatusBar {
 
 
     private fun calculateBright() {
-        statusBarCanvas?.let {
-            val backup = statusBarCanvas?.save()
-            try {
-                it.scale(1 / 5f, 1 / 5f)
-                decorView?.draw(it)
-            } catch (e: Exception) {
-                BuildConfig.DEBUG.takeIf { b -> b }?.let {
-                    Log.e(TAG, "OnPreDrawListener: ", e)
+        try {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
+                window?.let {
+                    PixelCopy.request(
+                        it, statusBarBitmap ?: return@let,
+                        { result ->
+                            if (result != PixelCopy.SUCCESS) {
+                                Log.e(TAG, "Error while copying pixels, copy result: $result")
+                            }
+                        },
+                        handler
+                    )
                 }
-            } finally {
-                backup?.let { i -> statusBarCanvas?.restoreToCount(i) }
-                insetsController?.isAppearanceLightStatusBars =
-                    statusBarBitmap?.isLightColor() == true
+            } else {
+                statusBarCanvas?.let {
+                    it.setBitmap(statusBarBitmap)
+                    val backup = statusBarCanvas?.save()
+                    it.scale(1 / 5f, 1 / 5f)
+                    decorView?.draw(it)
+                    backup?.let { i -> statusBarCanvas?.restoreToCount(i) }
+                    it.setBitmap(null)
+                }
             }
+        } catch (e: Exception) {
+            BuildConfig.DEBUG.takeIf { b -> b }?.let {
+                Log.e(TAG, "OnPreDrawListener: ", e)
+            }
+        } finally {
+            insetsController?.isAppearanceLightStatusBars =
+                statusBarBitmap?.isLightColor() == true
         }
     }
 
@@ -87,13 +107,18 @@ object DynamicStatusBar {
     }
 
     internal fun onResume(window: Window) {
+        weakWindow?.clear()
+        weakWindow = WeakReference(window)
+        weakDecorView?.clear()
         weakDecorView = WeakReference(window.decorView)
-        delay = (1000L / (window.decorView.display?.refreshRate ?: 60f).roundToLong())
+        delay = (1000L / (window.decorView.display?.refreshRate ?: 60f).roundToLong())*10
         insetsController = WindowInsetsControllerCompat(window, window.decorView)
         decorView?.viewTreeObserver?.addOnPreDrawListener(preDrawListener)
     }
 
     internal fun onPause() {
+        weakWindow?.clear()
+        weakDecorView?.clear()
         insetsController = null
         decorView?.viewTreeObserver?.removeOnPreDrawListener(preDrawListener)
     }
