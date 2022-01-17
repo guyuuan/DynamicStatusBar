@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Rect
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -29,6 +30,7 @@ object DynamicStatusBar {
     private val window: Window? get() = weakWindow?.get()
     private var delay = 1000L / 60
     private val handler = Handler(Looper.getMainLooper())
+    private lateinit var rect: Rect
     internal fun init(context: Context) {
         getStatusBarHeight(context)
         initStatusBarBitmap()
@@ -37,7 +39,8 @@ object DynamicStatusBar {
     private val preDrawListener by lazy {
         ViewTreeObserver.OnPreDrawListener {
             if (initStatusBarBitmap()) {
-                decorView?.handler?.postDelayed(::calculateBright, delay)
+                handler.removeCallbacksAndMessages(null)
+                handler.postDelayed(::calculateBright, delay)
             }
             true
         }
@@ -45,37 +48,39 @@ object DynamicStatusBar {
 
 
     private fun calculateBright() {
-        try {
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
-                window?.let {
-                    PixelCopy.request(
-                        it, statusBarBitmap ?: return@let,
-                        { result ->
-                            if (result != PixelCopy.SUCCESS) {
-                                Log.e(TAG, "Error while copying pixels, copy result: $result")
-                            }
-                        },
-                        handler
-                    )
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    window?.let {
+                        PixelCopy.request(
+                            it, rect, statusBarBitmap ?: return@let,
+                            { result ->
+                                if (result != PixelCopy.SUCCESS) {
+                                    Log.e(TAG, "Error while copying pixels, copy result: $result")
+                                } else {
+                                    insetsController?.isAppearanceLightStatusBars =
+                                        statusBarBitmap?.isLightColor() == true
+                                }
+                            },
+                            handler
+                        )
+                    }
+                } else {
+                    statusBarCanvas?.let {
+                        it.setBitmap(statusBarBitmap)
+                        val backup = statusBarCanvas?.save()
+                        it.scale(1 / 5f, 1 / 5f)
+                        decorView?.draw(it)
+                        backup?.let { i -> statusBarCanvas?.restoreToCount(i) }
+                        it.setBitmap(null)
+                        insetsController?.isAppearanceLightStatusBars =
+                            statusBarBitmap?.isLightColor() == true
+                    }
                 }
-            } else {
-                statusBarCanvas?.let {
-                    it.setBitmap(statusBarBitmap)
-                    val backup = statusBarCanvas?.save()
-                    it.scale(1 / 5f, 1 / 5f)
-                    decorView?.draw(it)
-                    backup?.let { i -> statusBarCanvas?.restoreToCount(i) }
-                    it.setBitmap(null)
+            } catch (e: Exception) {
+                BuildConfig.DEBUG.takeIf { b -> b }?.let {
+                    Log.e(TAG, "OnPreDrawListener: ", e)
                 }
             }
-        } catch (e: Exception) {
-            BuildConfig.DEBUG.takeIf { b -> b }?.let {
-                Log.e(TAG, "OnPreDrawListener: ", e)
-            }
-        } finally {
-            insetsController?.isAppearanceLightStatusBars =
-                statusBarBitmap?.isLightColor() == true
-        }
     }
 
     private fun initStatusBarBitmap(): Boolean {
@@ -104,6 +109,10 @@ object DynamicStatusBar {
         } else {
             100
         }
+        rect = Rect(
+            0, 0, Resources.getSystem().displayMetrics.widthPixels,
+            statusBarHeight
+        )
     }
 
     internal fun onResume(window: Window) {
@@ -111,7 +120,7 @@ object DynamicStatusBar {
         weakWindow = WeakReference(window)
         weakDecorView?.clear()
         weakDecorView = WeakReference(window.decorView)
-        delay = (1000L / (window.decorView.display?.refreshRate ?: 60f).roundToLong())*10
+        delay = (1000L / (window.decorView.display?.refreshRate ?: 60f).roundToLong())*3
         insetsController = WindowInsetsControllerCompat(window, window.decorView)
         decorView?.viewTreeObserver?.addOnPreDrawListener(preDrawListener)
     }

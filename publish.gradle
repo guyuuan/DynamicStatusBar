@@ -11,7 +11,7 @@ task androidSourcesJar(type: Jar) {
 
 ext {
     PUBLISH_GROUP_ID = 'cn.chitanda'
-    PUBLISH_VERSION = '2.4.2'
+    PUBLISH_VERSION = '2.5.0'
     PUBLISH_ARTIFACT_ID = 'dynamicstatusbar'
 }
 
