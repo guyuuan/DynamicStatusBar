@@ -47,9 +47,11 @@ object DynamicStatusBar {
                 it.scale(1 / 5f, 1 / 5f)
                 decorView?.draw(it)
             } catch (e: Exception) {
-                Log.e(TAG, "OnPreDrawListener: ", e)
+                BuildConfig.DEBUG.takeIf { b -> b }?.let {
+                    Log.e(TAG, "OnPreDrawListener: ", e)
+                }
             } finally {
-                backup?.let { statusBarCanvas?.restoreToCount(it) }
+                backup?.let { i -> statusBarCanvas?.restoreToCount(i) }
                 insetsController?.isAppearanceLightStatusBars =
                     statusBarBitmap?.isLightColor() == true
             }
