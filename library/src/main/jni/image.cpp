@@ -47,7 +47,6 @@ jint jni_getBright(JNIEnv *env,jobject , jobject bitmap) {
         }
     }
     bright = (bright / (w * h));
-    LOG_D("avg bright = %d", bright);
     return bright;
 }
 static std::string className = "cn/chitanda/dynamicstatusbar/NativeAnalyst";
