@@ -10,7 +10,7 @@ import android.graphics.Bitmap
 class NativeAnalyst {
     companion object {
         init {
-            System.loadLibrary("image-lib")
+            System.loadLibrary("imganalyst")
         }
     }
 

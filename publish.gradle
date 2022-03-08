@@ -2,7 +2,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
 task androidSourcesJar(type: Jar) {
-    classifier = 'sources'
+    archiveClassifier.set("sources")
     from android.sourceSets.main.java.source
 
     exclude "**/R.class"
@@ -11,7 +11,7 @@ task androidSourcesJar(type: Jar) {
 
 ext {
     PUBLISH_GROUP_ID = 'cn.chitanda'
-    PUBLISH_VERSION = '2.5.1'
+    PUBLISH_VERSION = '2.5.3'
     PUBLISH_ARTIFACT_ID = 'dynamicstatusbar'
 }
 

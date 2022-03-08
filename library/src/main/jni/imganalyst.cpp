@@ -58,19 +58,16 @@ static JNINativeMethod methods[] = {
 JNIEXPORT jint JNI_OnLoad(JavaVM *javaVm, void *) {
     JNIEnv *env = nullptr;
     int r = javaVm->GetEnv(reinterpret_cast<void **>(&env), JNI_VERSION_1_6);
-    LOG_D("start get JNIEnv");
     if (r != JNI_OK) {
         LOG_E("can't get JNIEnv");
         return JNI_ERR;
     }
     jclass clazz;
-    LOG_D("start get %s", className.c_str());
     clazz = env->FindClass(className.c_str());
     if (clazz == nullptr) {
         LOG_E("can't get %s", className.c_str());
         return JNI_ERR;
     }
-    LOG_D("start register natives");
     r = env->RegisterNatives(clazz, methods, sizeof(methods) / sizeof(JNINativeMethod));
     if (r != JNI_OK) {
         LOG_E("register natives failed");

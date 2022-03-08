@@ -6,6 +6,6 @@ import java.text.SimpleDateFormat
 import kotlin.math.roundToInt
 
 private val nativeAnalyst =NativeAnalyst()
-internal fun Bitmap.isLightColor(): Boolean {
+fun Bitmap.isLightColor(): Boolean {
     return nativeAnalyst.getBright(this) > 128
 }
