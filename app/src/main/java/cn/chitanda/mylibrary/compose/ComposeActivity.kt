@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,21 +28,25 @@ class ComposeActivity : ComponentActivity() {
         setContent {
             MyLibraryTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(color = MaterialTheme.colors.background) {
-                    LazyColumn(Modifier.fillMaxSize()) {
-                        items(300) { i ->
-                            val color = when {
-                                i % 2 == 0 -> Color.White
-                                else -> Color.Black
-                            }
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(50.dp)
-                                    .background(color = color)
-                            )
-                        }
+                Surface(color = Color.White) {
+                    Column(Modifier.fillMaxSize()) {
+                        Box(modifier = Modifier.fillMaxWidth().weight(1f).background(color = Color.White))
+                        Box(modifier = Modifier.fillMaxWidth().weight(1f).background(color = Color.Black))
                     }
+//                    LazyColumn(Modifier.fillMaxSize()) {
+//                        items(300) { i ->
+//                            val color = when {
+//                                i % 2 == 0 -> Color.White
+//                                else -> Color.Black
+//                            }
+//                            Box(
+//                                modifier = Modifier
+//                                    .fillMaxWidth()
+//                                    .height(50.dp)
+//                                    .background(color = color)
+//                            )
+//                        }
+//                    }
                 }
             }
         }

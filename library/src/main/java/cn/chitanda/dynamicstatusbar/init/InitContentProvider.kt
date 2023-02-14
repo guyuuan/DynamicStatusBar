@@ -17,7 +17,6 @@ import cn.chitanda.dynamicstatusbar.DynamicStatusBar
 class InitContentProvider : ContentProvider(), Application.ActivityLifecycleCallbacks {
     override fun onCreate(): Boolean {
         val app = (context?.applicationContext as? Application) ?: return false
-        DynamicStatusBar.init(app)
         app.registerActivityLifecycleCallbacks(this)
         return true
     }
