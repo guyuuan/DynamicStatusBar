@@ -47,9 +47,9 @@ jint jni_getBright(JNIEnv *env,jobject , jobject bitmap) {
         }
     }
     bright = (bright / (w * h));
-    return bright;
+    return static_cast<jint>(bright);
 }
-static std::string className = "cn/chitanda/dynamicstatusbar/NativeAnalyst";
+static std::string className = "io/github/guyuuan/dynamicstatusbar/NativeAnalyst";
 static JNINativeMethod methods[] = {
         {"getBright", "(Landroid/graphics/Bitmap;)I", (jint *) jni_getBright}
 

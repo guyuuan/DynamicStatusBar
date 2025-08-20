@@ -1,4 +1,4 @@
-package cn.chitanda.dynamicstatusbar.init
+package io.github.guyuuan.dynamicstatusbar.init
 
 import android.app.Activity
 import android.app.Application
@@ -7,7 +7,7 @@ import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
-import cn.chitanda.dynamicstatusbar.DynamicStatusBar
+import io.github.guyuuan.dynamicstatusbar.DynamicStatusBar
 
 /**
  * @author: Chen

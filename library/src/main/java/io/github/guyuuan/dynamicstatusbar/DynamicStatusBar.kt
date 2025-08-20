@@ -1,4 +1,4 @@
-package cn.chitanda.dynamicstatusbar
+package io.github.guyuuan.dynamicstatusbar
 
 import android.content.res.Resources
 import android.graphics.Bitmap
@@ -12,6 +12,8 @@ import android.view.PixelCopy
 import android.view.View
 import android.view.ViewTreeObserver
 import android.view.Window
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.withScale
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import java.lang.ref.WeakReference
@@ -104,20 +106,18 @@ object DynamicStatusBar {
 
     private fun calculateBrightWithCanvas() {
         statusBarCanvas?.let {
-            val backup = it.save()
-            it.scale(1 / 5f, 1 / 5f)
-            decorView?.draw(it)
-            it.restoreToCount(backup)
+            it.withScale(1 / 5f, 1 / 5f) {
+                decorView?.draw(it)
+            }
             val isLight = (statusBarBitmap?.isLightColor() == true).also { b ->
                 isLight = b
             }
             insetsController?.isAppearanceLightStatusBars = isLight
         }
         navBarCanvas?.let {
-            val backup = it.save()
-            it.scale(1 / 5f, 1 / 5f)
-            decorView?.draw(it)
-            it.restoreToCount(backup)
+            it.withScale(1 / 5f, 1 / 5f) {
+                decorView?.draw(it)
+            }
             val isLight = (navBarBitmap?.isLightColor() == true).also { b ->
                 isLight = b
             }
@@ -137,7 +137,7 @@ object DynamicStatusBar {
             try {
                 val w = Resources.getSystem().displayMetrics.widthPixels / 5
                 val h = statusBarHeight / 5
-                statusBarBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+                statusBarBitmap = createBitmap(w, h)
                 statusBarCanvas = Canvas(statusBarBitmap ?: return false)
 
             } catch (e: Exception) {
@@ -162,7 +162,7 @@ object DynamicStatusBar {
             try {
                 val w = Resources.getSystem().displayMetrics.widthPixels / 5
                 val h = navBarHeight / 5
-                navBarBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+                navBarBitmap = createBitmap(w, h)
                 navBarCanvas = Canvas(statusBarBitmap ?: return false)
             } catch (e: Exception) {
                 Log.e(TAG, "initStatusBarBitmap: ", e)

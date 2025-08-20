@@ -1,4 +1,4 @@
-package cn.chitanda.dynamicstatusbar
+package io.github.guyuuan.dynamicstatusbar
 
 import android.graphics.Bitmap
 
