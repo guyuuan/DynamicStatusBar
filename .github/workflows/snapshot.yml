@@ -1,0 +1,24 @@
+name: Publish dev-SNAPSHOT to Maven Central
+
+on:
+  push:
+    branches:
+      - main  # Or your default branch
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Publish to Maven Central
+        env:
+          IS_SNAPSHOT: true
+        run: ./gradlew publishToMavenCentral

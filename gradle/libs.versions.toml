@@ -11,7 +11,7 @@ androidxComposeBom = "2025.08.00"
 androidxLifecycle = "2.9.2"
 navigationFragmentKtx = "2.9.3"
 navigationUiKtx = "2.9.3"
-nexusPublishPlugin = "2.0.0"
+nexusPublishPlugin = "0.34.0"
 
 [libraries]
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -46,5 +46,5 @@ android-library = { id = "com.android.library", version.ref = "androidGradlePlug
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 maven-publish = { id = "maven-publish" }
-nexus-publish = { id = "io.github.gradle-nexus.publish-plugin", version.ref = "nexusPublishPlugin" }
+nexus-publish = { id = "com.vanniktech.maven.publish", version.ref = "nexusPublishPlugin" }
 signing = { id = "signing" }

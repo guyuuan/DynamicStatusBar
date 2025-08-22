@@ -60,12 +60,12 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(projects.library)
-
+//    implementation(projects.library)
+    implementation("io.github.guyuuan:dynamicstatusbar:dev-SNAPSHOT")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+//    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
 
 //    implementation 'androidx.core:core-ktx:1.9.0'
