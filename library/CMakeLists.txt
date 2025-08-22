@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.1.0)
+cmake_minimum_required(VERSION 3.22.1)
 
 set(libs ${CMAKE_SOURCE_DIR}/src/main/jniLibs)
 #导入libopencv_java4库文件

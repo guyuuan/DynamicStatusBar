@@ -21,9 +21,6 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install CMake
-        run: sdkmanager "cmake;4.1.0"
-
       - name: Publish to Maven Central
         env:
           IS_SNAPSHOT: true
