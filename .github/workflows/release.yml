@@ -20,5 +20,10 @@ jobs:
 
       - name: Publish to Maven Central
         env:
-          IS_SNAPSHOT: true
+          IS_SNAPSHOT: false
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{secrets.ORG_GRADLE_PROJECT_mavenCentralUsername}}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{secrets.ORG_GRADLE_PROJECT_mavenCentralPassword}}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{secrets.ORG_GRADLE_PROJECT_signingInMemoryKey}}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{secrets.ORG_GRADLE_PROJECT_signingInMemoryKeyId}}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{secrets.ORG_GRADLE_PROJECT_signingInMemoryKeyPassword}}
         run: ./gradlew publishToMavenCentral
