@@ -34,7 +34,6 @@ jobs:
         with:
           path: |
             /usr/local/lib/android/sdk
-            ~/.gradle/
           key: ${{ runner.os }}-android-${{ hashFiles('**/build.gradle') }}
           restore-keys: |
             ${{ runner.os }}-android-
