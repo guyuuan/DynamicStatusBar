@@ -49,10 +49,11 @@ jobs:
         run: ./gradlew publishToMavenCentral
       - name: Get current date
         id: date
-        run: echo "date=$(date +'%Y/%m/%d/%H/%M')" >> $GITHUB_OUTPUT
+        run: echo "date=$(date +'%Y/%m/%d %H%M')" >> $GITHUB_OUTPUT
 
       - name: PreRelease
         uses: softprops/action-gh-release@v2
         with:
           prerelease: true
-          name: ${{ steps.date.outputs.date }}
+          name: ${{ steps.date.outputs.date }}-snapshot
+          tag-name: ${{ steps.date.outputs.date }}-snapshot
