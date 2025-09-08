@@ -48,3 +48,6 @@ jobs:
           ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{secrets.ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYID}}
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{secrets.ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYPASSWORD}}
         run: ./gradlew publishToMavenCentral
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: github.ref_type == 'tag'
