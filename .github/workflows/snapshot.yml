@@ -38,6 +38,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-android-
 
+      - name: Generate PreRelease Version
+        id: version
+        run: |
+          LATEST_TAG=$(git tag --list 'v*' --sort=-v:refname | grep -v '\-rc' | head -n1)
+          VERSION="${LAST_TAG}-rc.$(git rev-parse --short HEAD)"
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Get current date
+        id: date
+        run: |
+          echo "date=$(date +'%Y/%m/%d %H%M')" >> $GITHUB_OUTPUT
+
       - name: Publish to Maven Central
         env:
           IS_SNAPSHOT: true
@@ -46,14 +58,12 @@ jobs:
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{secrets.ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEY}}
           ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{secrets.ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYID}}
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{secrets.ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYPASSWORD}}
+          SNAPSHOT_VERSION: ${{ steps.version.outputs.version }}
         run: ./gradlew publishToMavenCentral
-      - name: Get current date
-        id: date
-        run: echo "date=$(date +'%Y/%m/%d %H%M')" >> $GITHUB_OUTPUT
 
       - name: PreRelease
         uses: softprops/action-gh-release@v2
         with:
           prerelease: true
-          name: ${{ steps.date.outputs.date }}-snapshot
-          tag-name: ${{ steps.date.outputs.date }}-snapshot
+          tag_name: ${{ steps.version.outputs.version }}
+          name: "Pre Release ${{ steps.version.outputs.version }} ${{ steps.date.outputs.date }}"

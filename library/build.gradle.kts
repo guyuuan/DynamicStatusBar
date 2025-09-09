@@ -20,7 +20,9 @@ fun getVersionNameFromGit(): String {
 val isSnapshot =
     (findProperty("isSnapshot")?.toString() ?: System.getenv("IS_SNAPSHOT"))?.toBoolean() ?: true
 version =
-    if (isSnapshot) "dev-SNAPSHOT" else System.getenv(" VERSION_NAME ") ?: getVersionNameFromGit()
+    if (isSnapshot) "${System.getenv(" SNAPSHOT_VERSION ") ?: " dev "}-SNAPSHOT" else System.getenv(
+        " VERSION_NAME "
+    ) ?: getVersionNameFromGit()
 android {
     namespace = "io.github.guyuuan.dynamicstatusbar"
 
