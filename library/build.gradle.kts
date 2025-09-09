@@ -11,7 +11,7 @@ plugins {
 fun getVersionNameFromGit(): String {
     return try {
         val process = ProcessBuilder("git", "describe", "--tags", "--abbrev=0").start()
-        process.inputStream.bufferedReader().readText().trim()
+        process.inputStream.bufferedReader().readText().trim().replace("v", "")
     } catch (e: Exception) {
         "dev"
     }
@@ -20,9 +20,11 @@ fun getVersionNameFromGit(): String {
 val isSnapshot =
     (findProperty("isSnapshot")?.toString() ?: System.getenv("IS_SNAPSHOT"))?.toBoolean() ?: true
 version =
-    if (isSnapshot) "${System.getenv(" SNAPSHOT_VERSION ") ?: " dev "}-SNAPSHOT" else System.getenv(
-        " VERSION_NAME "
-    ) ?: getVersionNameFromGit()
+    if (isSnapshot) {
+        "${System.getenv("SNAPSHOT_VERSION")?.replace("v", "") ?: "dev"}-SNAPSHOT"
+    } else {
+        getVersionNameFromGit()
+    }
 android {
     namespace = "io.github.guyuuan.dynamicstatusbar"
 
@@ -76,6 +78,7 @@ mavenPublishing {
             variant = "release"
         )
     )
+    logger.warn("Publishing to Maven Central version $version")
     coordinates(
         groupId = "io.github.guyuuan", artifactId = "dynamicstatusbar", version = version.toString()
     )
