@@ -41,7 +41,7 @@ jobs:
       - name: Generate PreRelease Version
         id: version
         run: |
-          LATEST_TAG=$(git tag --list 'v*' --sort=-v:refname | grep -v '\-rc' | head -n1)
+          LATEST_TAG=$(git describe --tags --abbrev=0)
           VERSION="${LATEST_TAG}-rc.$(git rev-parse --short HEAD)"
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
