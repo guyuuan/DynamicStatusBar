@@ -1,17 +1,17 @@
 [versions]
-activityCompose = "1.10.1"
-androidGradlePlugin = "8.12.1"
-androidxCore = "1.17.0"
-appcompat = "1.7.1"
+activityCompose = "1.13.0"
+androidGradlePlugin = "9.3.2"
+androidxCore = "1.19.0"
+appcompat = "1.8.0"
 espressoCore = "3.7.0"
 junit = "4.13.2"
 junitVersion = "1.3.0"
-kotlin = "2.2.10"
-androidxComposeBom = "2025.08.00"
-androidxLifecycle = "2.9.2"
-navigationFragmentKtx = "2.9.3"
-navigationUiKtx = "2.9.3"
-nexusPublishPlugin = "0.34.0"
+kotlin = "2.4.10"
+androidxComposeBom = "2026.08.00"
+androidxLifecycle = "2.11.0"
+navigationFragmentKtx = "2.9.8"
+navigationUiKtx = "2.9.8"
+nexusPublishPlugin = "0.37.0"
 
 [libraries]
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -43,7 +43,6 @@ junit = { module = "junit:junit", version.ref = "junit" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 maven-publish = { id = "maven-publish" }
 nexus-publish = { id = "com.vanniktech.maven.publish", version.ref = "nexusPublishPlugin" }

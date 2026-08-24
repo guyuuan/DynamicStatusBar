@@ -1,16 +1,15 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose)
-    alias(libs.plugins.kotlin.android)
 }
 
 android {
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "cn.chitanda.mylibrary"
         minSdk = 23
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
 
@@ -60,8 +59,8 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-//    implementation(projects.library)
-    implementation("io.github.guyuuan:dynamicstatusbar:dev-SNAPSHOT")
+    implementation(projects.library)
+//    implementation("io.github.guyuuan:dynamicstatusbar:2.0.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
