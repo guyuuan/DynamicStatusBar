@@ -18,7 +18,7 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
       - name: Cache Gradle
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.gradle/caches
@@ -30,7 +30,7 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
       - name: Cache Android SDK
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             /usr/local/lib/android/sdk
@@ -41,6 +41,7 @@ jobs:
       - name: Publish to Maven Central
         env:
           IS_SNAPSHOT: false
+          RELEASE_VERSION: ${{ github.ref_name }}
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{secrets.ORG_GRADLE_PROJECT_MAVENCENTRALUSERNAME}}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{secrets.ORG_GRADLE_PROJECT_MAVENCENTRALPASSWORD}}
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{secrets.ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEY}}
@@ -48,5 +49,5 @@ jobs:
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{secrets.ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYPASSWORD}}
         run: ./gradlew publishToMavenCentral
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         if: github.ref_type == 'tag'

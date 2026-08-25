@@ -1,4 +1,6 @@
 import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.SourcesJar
 
 plugins {
     alias(libs.plugins.android.library)
@@ -10,17 +12,22 @@ plugins {
 fun getVersionNameFromGit(): String {
     return try {
         val process = ProcessBuilder("git", "describe", "--tags", "--abbrev=0").start()
-        process.inputStream.bufferedReader().readText().trim().replace("v", "")
+        val version = process.inputStream.bufferedReader().readText().trim()
+        if (process.waitFor() == 0 && version.isNotEmpty()) {
+            version.removePrefix("v")
+        } else {
+            System.getenv("RELEASE_VERSION")?.removePrefix("v") ?: "dev"
+        }
     } catch (e: Exception) {
-        "dev"
+        System.getenv("RELEASE_VERSION")?.removePrefix("v") ?: "dev"
     }
 }
 
 val isSnapshot =
-    (findProperty("isSnapshot")?.toString() ?: System.getenv("IS_SNAPSHOT"))?.toBoolean() ?: true
+    (findProperty("isSnapshot")?.toString() ?: System.getenv("IS_SNAPSHOT"))?.toBoolean() ?: false
 version =
     if (isSnapshot) {
-        "${System.getenv("SNAPSHOT_VERSION")?.replace("v", "") ?: "dev"}-SNAPSHOT"
+        "dev-SNAPSHOT"
     } else {
         getVersionNameFromGit()
     }
@@ -70,11 +77,8 @@ mavenPublishing {
     signAllPublications()
     configure(
         AndroidSingleVariantLibrary(
-            // whether to publish a sources jar
-            sourcesJar = true,
-            // whether to publish a javadoc jar
-            publishJavadocJar = true,
-            // the published variant
+            javadocJar = JavadocJar.Javadoc(),
+            sourcesJar = SourcesJar.Sources(),
             variant = "release"
         )
     )
